@@ -1,12 +1,13 @@
 package com.harko
 
-import com.harko.TriangleUtils.{FinalNode, Node}
+import com.harko.Main.parseText
+import com.harko.TriangleUtils.{FinalNode, Node, Triangle, getMinPath, getTreeFromLines}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
 import scala.util.Success
 
-class Triangle extends AnyFunSuite with Matchers with TryValues {
+class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
   test("Can parse text lines") {
 
@@ -16,7 +17,7 @@ class Triangle extends AnyFunSuite with Matchers with TryValues {
          |1 2 3
          |""".stripMargin
 
-    Main.parseText(input) should be(Success(
+    parseText(input) should be(Success(
       List(List(1), List(1, 2), List(1, 2, 3))))
 
   }
@@ -29,7 +30,7 @@ class Triangle extends AnyFunSuite with Matchers with TryValues {
          |1 2 3
          |""".stripMargin
 
-    Main.parseText(inputWithErrors) shouldBe 'failure
+    parseText(inputWithErrors) shouldBe 'failure
 
   }
 
@@ -39,7 +40,7 @@ class Triangle extends AnyFunSuite with Matchers with TryValues {
       List(1, 2),
       List(1, 2, 3))
 
-    val tree: TriangleUtils.Triangle = TriangleUtils.getTreeFromLines(0, 0, input)
+    val tree: Triangle = getTreeFromLines(0, 0, input)
     val expected = Node(1,
       Node(1, FinalNode(1), FinalNode(2)),
       Node(2, FinalNode(2), FinalNode(3)))
@@ -48,5 +49,25 @@ class Triangle extends AnyFunSuite with Matchers with TryValues {
 
   }
 
+  test("Can find minimum path") {
+
+    val inputFromExample =
+      """|7
+         |6 3
+         |3 8 5
+         |11 2 10 9
+         |""".stripMargin
+
+    val parsed = parseText(inputFromExample)
+
+    parsed shouldBe 'success
+
+    val tree = getTreeFromLines(0, 0, parsed.get)
+
+    val minPath = getMinPath(tree)
+
+    minPath.sum shouldBe 18
+
+  }
 
 }
