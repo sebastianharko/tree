@@ -11,7 +11,6 @@ object TriangleUtils {
 
   case class Node(value: Int, left: Triangle, right: Triangle) extends Triangle
 
-
   def getTreeFromLines(row: Int, col: Int, data: List[List[Int]]): Triangle = {
 
     if (row == data.size - 1) {

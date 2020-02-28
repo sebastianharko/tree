@@ -1,5 +1,6 @@
 package com.harko
 
+import com.harko.TriangleUtils.{FinalNode, Node}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
@@ -38,7 +39,12 @@ class Triangle extends AnyFunSuite with Matchers with TryValues {
       List(1, 2),
       List(1, 2, 3))
 
-    TriangleUtils.getTreeFromLines(0, 0, input)
+    val tree: TriangleUtils.Triangle = TriangleUtils.getTreeFromLines(0, 0, input)
+    val expected = Node(1,
+      Node(1, FinalNode(1), FinalNode(2)),
+      Node(2, FinalNode(2), FinalNode(3)))
+
+    tree shouldBe expected
 
   }
 
