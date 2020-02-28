@@ -25,10 +25,11 @@ object TriangleUtils {
   def getTreeFromLines(data: Array[Array[Int]]): Triangle = {
 
     lazy val get: ((Int, Int)) => Triangle = memoize[(Int, Int), Triangle] {
-      case (row: Int, col: Int) if row == data.length - 1 => {
+
+      case (row: Int, col: Int) if row == data.length - 1 =>
         val value = data(row)(col)
         FinalNode(value, sum = value)
-      }
+
       case (row: Int, col: Int) =>
         val value = data(row)(col)
         val left = get(row + 1, col)
@@ -49,7 +50,7 @@ object TriangleUtils {
         value :: Nil
       case Node(value, left, right, _) if left.sum <= right.sum =>
         value :: followMinPath(left)
-      case Node(value, left, right, _) =>
+      case Node(value, _, right, _) =>
         value :: followMinPath(right)
     }
   }
@@ -62,9 +63,14 @@ object Main extends App {
     line.split(" ").map(item => item.toInt)
 
   def parseText(text: String): Try[Array[Array[Int]]] = Try {
-    text.split("\n")
-      .map(parseLine)
-      .toArray
+    text.split("\n").map(parseLine)
+  }.flatMap {
+    case data if isValidTriangle(data) => Success(data)
+    case _ => Failure(new Exception("Not a valid triangle"))
+  }
+
+  def isValidTriangle(data: Array[Array[Int]]): Boolean = {
+    data.map(_.length).toList == (1 to data.length).toList
   }
 
   val text: String = readLine()
@@ -73,7 +79,8 @@ object Main extends App {
     case Success(data) =>
       println("Minimal path is:")
     case Failure(ex) =>
-      println(s"Failed to parse input ${ex.toString}")
+      println(s"Failed to parse input: ${ex.getMessage}")
+      ex.printStackTrace()
   }
 
 }

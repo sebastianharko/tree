@@ -1,6 +1,6 @@
 package com.harko
 
-import com.harko.Main.parseText
+import com.harko.Main.{isValidTriangle, parseText}
 import com.harko.TriangleUtils.{FinalNode, Node, Triangle, followMinPath, getTreeFromLines}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
@@ -54,6 +54,21 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
   }
 
+  test("Can flag invalid tree") {
+
+    isValidTriangle(Array(
+      Array(1),
+      Array(1, 2),
+      Array(1, 2, 4, 5)
+    )) shouldBe false
+
+    isValidTriangle(Array(
+      Array(1),
+      Array(1, 2),
+      Array(1, 2, 3)
+    )) shouldBe true
+  }
+
   test("Can find minimum path") {
 
     val inputFromExample =
@@ -73,6 +88,8 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     minPath.sum shouldBe 18
 
+    minPath shouldBe (List(7, 6, 3, 2))
+
   }
 
   test("Can handle file with 500 rows") {
@@ -80,7 +97,7 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
     val parsed = parseText(f)
     parsed shouldBe 'success
     val tree = getTreeFromLines(parsed.get)
-    println(followMinPath(tree))
+    followMinPath(tree).sum shouldBe tree.sum
 
   }
 
