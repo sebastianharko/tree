@@ -5,6 +5,7 @@ import com.harko.TriangleUtils.{FinalNode, Node, Triangle, getMinPath, getTreeFr
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
+import scala.io.Source
 import scala.util.Success
 
 class TriangleTest extends AnyFunSuite with Matchers with TryValues {
@@ -35,12 +36,12 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
   }
 
   test("Can build a tree from input text lines") {
-    val input: List[List[Int]] =  List(
-      List(1),
-      List(1, 2),
-      List(1, 2, 3))
+    val input: Array[Array[Int]] =  Array(
+      Array(1),
+      Array(1, 2),
+      Array(1, 2, 3))
 
-    val tree: Triangle = getTreeFromLines(0, 0, input)
+    val tree: Triangle = getTreeFromLines(input)
     val expected = Node(1,
       Node(1, FinalNode(1), FinalNode(2)),
       Node(2, FinalNode(2), FinalNode(3)))
@@ -62,11 +63,23 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     parsed shouldBe 'success
 
-    val tree = getTreeFromLines(0, 0, parsed.get)
+    val tree = getTreeFromLines(parsed.get)
 
     val minPath = getMinPath(tree)
 
     minPath.sum shouldBe 18
+
+  }
+
+  test("can handle file with 500 rows") {
+    val f = Source.fromResource("data.txt").mkString
+    val parsed = parseText(f)
+    parsed shouldBe 'success
+
+    println("building tree")
+    val tree = getTreeFromLines(parsed.get)
+    println("finding path")
+    println(getMinPath(tree))
 
   }
 

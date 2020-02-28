@@ -1,7 +1,10 @@
 package com.harko
 
+import com.harko.TriangleUtils.getTreeFromLines
+
+import scala.collection.mutable
 import scala.io.StdIn._
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Random, Success, Try}
 
 object TriangleUtils {
 
@@ -11,17 +14,26 @@ object TriangleUtils {
 
   case class Node(value: Int, left: Triangle, right: Triangle) extends Triangle
 
-  def getTreeFromLines(row: Int, col: Int, data: List[List[Int]]): Triangle = {
-
-    if (row == data.size - 1) {
-      val value = data(row)(col)
-      FinalNode(value)
-    } else {
-        val value = data(row)(col)
-        Node(value, left = getTreeFromLines(row + 1, col, data),
-          right = getTreeFromLines(row + 1, col + 1, data))
-    }
+  def memoize[I, O](f: I => O): I => O = new mutable.HashMap[I, O]() {
+    override def apply(key: I) = getOrElseUpdate(key, f(key))
   }
+
+  def getTreeFromLines(data: Array[Array[Int]]): Triangle = {
+
+    lazy val get: ((Int, Int)) => Triangle = memoize[(Int, Int), Triangle] {
+      case (row: Int, col: Int) if row == data.length -1 => {
+        val value = data(row)(col)
+        FinalNode(value)
+      }
+      case (row: Int, col: Int) =>
+        val value = data(row)(col)
+        Node(value, left = get(row + 1, col), right = get(row + 1, col + 1))
+    }
+
+    get(0, 0)
+
+  }
+
 
   def chooseMin(p: List[Int], q: List[Int]): List[Int] = {
     if (p.sum <= q.sum) p else q
@@ -40,13 +52,13 @@ object TriangleUtils {
 
 object Main extends App {
 
-  def parseLine(line: String): List[Int] =
-    line.split(" ").toList.map(item => item.toInt)
+  def parseLine(line: String): Array[Int] =
+    line.split(" ").map(item => item.toInt)
 
-  def parseText(text: String): Try[List[List[Int]]] = Try {
+  def parseText(text: String): Try[Array[Array[Int]]] = Try {
     text.split("\n")
       .map(parseLine)
-      .toList
+      .toArray
   }
 
   val text: String = readLine()
