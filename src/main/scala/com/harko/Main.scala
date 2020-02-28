@@ -1,19 +1,23 @@
+package com.harko
+
 import scala.io.StdIn._
+import scala.util.{Failure, Success, Try}
 
-sealed trait Triangle
+object TriangleUtils {
 
-case class FinalNode(value: Int) extends Triangle
+  sealed trait Triangle
 
-case class Node(value: Int, left: Triangle, right: Triangle) extends Triangle
+  case class FinalNode(value: Int) extends Triangle
 
-object Triangle {
+  case class Node(value: Int, left: Triangle, right: Triangle) extends Triangle
+
 
   def getTreeFromLines(row: Int, col: Int, data: List[List[Int]]): Triangle = {
-    row match {
-      case last if row == data.size - 1 =>
-        val value = data(row)(col)
-        FinalNode(value)
-      case _ =>
+
+    if (row == data.size - 1) {
+      val value = data(row)(col)
+      FinalNode(value)
+    } else {
         val value = data(row)(col)
         Node(value, left = getTreeFromLines(row + 1, col, data),
           right = getTreeFromLines(row + 1, col + 1, data))
@@ -40,13 +44,19 @@ object Main extends App {
   def parseLine(line: String): List[Int] =
     line.split(" ").toList.map(item => item.toInt)
 
-  def parseText(text: String): List[List[Int]] =
+  def parseText(text: String): Try[List[List[Int]]] = Try {
     text.split("\n")
-      .map(line => parseLine(line))
+      .map(parseLine)
       .toList
+  }
 
   val text: String = readLine()
 
-  parseText(text)
+  parseText(text) match {
+    case Success(data) =>
+      println("Minimal path is:")
+    case Failure(_) =>
+      println("Failed to parse input")
+  }
 
 }
