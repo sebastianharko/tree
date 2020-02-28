@@ -1,7 +1,7 @@
 package com.harko
 
 import com.harko.Main.parseText
-import com.harko.TriangleUtils.{FinalNode, Node, Triangle, getMinPath, getTreeFromLines}
+import com.harko.TriangleUtils.{FinalNode, Node, Triangle, followMinPath, getTreeFromLines}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
@@ -18,8 +18,11 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
          |1 2 3
          |""".stripMargin
 
-    parseText(input) should be(Success(
-      List(List(1), List(1, 2), List(1, 2, 3))))
+    parseText(input).map(_.toList.map(_.toList)) should be(
+      Success(List(
+        List(1),
+        List(1, 2),
+        List(1, 2, 3))))
 
   }
 
@@ -43,8 +46,9 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     val tree: Triangle = getTreeFromLines(input)
     val expected = Node(1,
-      Node(1, FinalNode(1), FinalNode(2)),
-      Node(2, FinalNode(2), FinalNode(3)))
+      Node(1, FinalNode(1, sum = 1), FinalNode(2, sum = 2), sum = 2),
+      Node(2, FinalNode(2, sum = 2), FinalNode(3, sum = 3), sum = 4),
+      sum = 3)
 
     tree shouldBe expected
 
@@ -65,21 +69,18 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     val tree = getTreeFromLines(parsed.get)
 
-    val minPath = getMinPath(tree)
+    val minPath = followMinPath(tree)
 
     minPath.sum shouldBe 18
 
   }
 
-  test("can handle file with 500 rows") {
+  test("Can handle file with 500 rows") {
     val f = Source.fromResource("data.txt").mkString
     val parsed = parseText(f)
     parsed shouldBe 'success
-
-    println("building tree")
     val tree = getTreeFromLines(parsed.get)
-    println("finding path")
-    println(getMinPath(tree))
+    println(followMinPath(tree))
 
   }
 
