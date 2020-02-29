@@ -24,7 +24,7 @@ object TriangleUtils {
     Math.min(left.minSum, right.minSum)
   }
 
-  def getTriangleFromLines(data: Array[Array[Int]]): Triangle = {
+  def buildTriangle(data: Array[Array[Int]]): Triangle = {
 
     lazy val get: ((Int, Int)) => Triangle =
       withMemoization[(Int, Int), Triangle] {
@@ -88,7 +88,7 @@ object Main extends App {
   // Result
   parseInput(lines) match {
     case Success(data: Array[Array[Int]]) =>
-      val triangle: Triangle = getTriangleFromLines(data)
+      val triangle: Triangle = buildTriangle(data)
       val path: List[Int] = followMinPath(triangle)
       println(s"Minimal path is: ${path.mkString(" + ")} = " + path.sum)
     case Failure(ex) =>

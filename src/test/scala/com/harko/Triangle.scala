@@ -1,7 +1,7 @@
 package com.harko
 
 import com.harko.Main.{isValidTriangle, parseInput}
-import com.harko.TriangleUtils.{FinalNode, Node, Triangle, followMinPath, getTriangleFromLines}
+import com.harko.TriangleUtils.{FinalNode, Node, Triangle, followMinPath, buildTriangle}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
@@ -10,7 +10,7 @@ import scala.util.Success
 
 class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
-  test("Can parse triangle from text lines into array") {
+  test("Can parse triangle from text lines -> array") {
 
     val input =
       """|1
@@ -38,23 +38,23 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
   }
 
-  test("Can build a tree from the input text lines") {
+  test("Can build a triangle") {
     val input: Array[Array[Int]] =  Array(
       Array(1),
       Array(1, 2),
       Array(1, 2, 3))
 
-    val tree: Triangle = getTriangleFromLines(input)
+    val triangle: Triangle = buildTriangle(input)
     val expected = Node(1,
       Node(1, FinalNode(1, minSum = 1), FinalNode(2, minSum = 2), minSum = 2),
       Node(2, FinalNode(2, minSum = 2), FinalNode(3, minSum = 3), minSum = 4),
       minSum = 3)
 
-    tree shouldBe expected
+    triangle shouldBe expected
 
   }
 
-  test("Can flag invalid tree") {
+  test("Can flag invalid triangle") {
 
     isValidTriangle(Array(
       Array(1),
@@ -82,9 +82,9 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     parsed shouldBe 'success
 
-    val tree = getTriangleFromLines(parsed.get)
+    val triangle = buildTriangle(parsed.get)
 
-    val minPath = followMinPath(tree)
+    val minPath = followMinPath(triangle)
 
     minPath.sum shouldBe 18
 
@@ -94,19 +94,19 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
   test("Can find minimum path (2)") {
 
-    val inputFromExample =
+    val simpleInput =
       """|1
          |1 2
          |1 2 3
          |""".stripMargin.split("\n").toList
 
-    val parsed = parseInput(inputFromExample)
+    val parsed = parseInput(simpleInput)
 
     parsed shouldBe 'success
 
-    val tree = getTriangleFromLines(parsed.get)
+    val triangle = buildTriangle(parsed.get)
 
-    val minPath = followMinPath(tree)
+    val minPath = followMinPath(triangle)
 
     minPath.sum shouldBe 3
 
@@ -117,8 +117,8 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
     val f = Source.fromResource("data.txt").mkString.split("\n").toList
     val parsed = parseInput(f)
     parsed shouldBe 'success
-    val tree = getTriangleFromLines(parsed.get)
-    followMinPath(tree).sum shouldBe tree.minSum
+    val triangle = buildTriangle(parsed.get)
+    followMinPath(triangle).sum shouldBe triangle.minSum
 
   }
 
