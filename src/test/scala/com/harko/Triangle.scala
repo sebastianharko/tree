@@ -1,7 +1,7 @@
 package com.harko
 
 import com.harko.Main.{isValidTriangle, parseInput}
-import com.harko.TriangleUtils.{FinalNode, Node, Triangle, followMinPath, buildTriangle}
+import com.harko.TriangleUtils.{TriangleArray, FinalNode, Node, Triangle, buildTriangle, followMinPath}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.{Matchers, TryValues}
 
@@ -18,7 +18,7 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
          |1 2 3
          |""".stripMargin.split("\n").toList
 
-    parseInput(input).map(_.toList.map(_.toList)) should be(
+    parseInput(input).map(_.toList) should be(
       Success(List(
         List(1),
         List(1, 2),
@@ -44,7 +44,7 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
       Array(1, 2),
       Array(1, 2, 3))
 
-    val triangle: Triangle = buildTriangle(input)
+    val triangle: Triangle = buildTriangle(TriangleArray(input))
     val expected = Node(1,
       Node(1, FinalNode(1, minSum = 1), FinalNode(2, minSum = 2), minSum = 2),
       Node(2, FinalNode(2, minSum = 2), FinalNode(3, minSum = 3), minSum = 4),
