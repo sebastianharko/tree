@@ -46,9 +46,9 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
 
     val tree: Triangle = getTriangleFromLines(input)
     val expected = Node(1,
-      Node(1, FinalNode(1, sum = 1), FinalNode(2, sum = 2), sum = 2),
-      Node(2, FinalNode(2, sum = 2), FinalNode(3, sum = 3), sum = 4),
-      sum = 3)
+      Node(1, FinalNode(1, minSum = 1), FinalNode(2, minSum = 2), minSum = 2),
+      Node(2, FinalNode(2, minSum = 2), FinalNode(3, minSum = 3), minSum = 4),
+      minSum = 3)
 
     tree shouldBe expected
 
@@ -118,7 +118,7 @@ class TriangleTest extends AnyFunSuite with Matchers with TryValues {
     val parsed = parseInput(f)
     parsed shouldBe 'success
     val tree = getTriangleFromLines(parsed.get)
-    followMinPath(tree).sum shouldBe tree.sum
+    followMinPath(tree).sum shouldBe tree.minSum
 
   }
 

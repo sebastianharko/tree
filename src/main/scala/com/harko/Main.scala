@@ -7,13 +7,13 @@ import scala.util.{Failure, Success, Try}
 object TriangleUtils {
 
   sealed trait Triangle {
-    val sum: Int
+    val minSum: Int
   }
 
-  case class FinalNode(value: Int, sum: Int)
+  case class FinalNode(value: Int, minSum: Int)
     extends Triangle
 
-  case class Node(value: Int, left: Triangle, right: Triangle, sum: Int)
+  case class Node(value: Int, left: Triangle, right: Triangle, minSum: Int)
     extends Triangle
 
   def withMemoization[I, O](f: I => O): I => O = new mutable.HashMap[I, O]() {
@@ -21,7 +21,7 @@ object TriangleUtils {
   }
 
   def minSum(left: Triangle, right: Triangle): Int = {
-    Math.min(left.sum, right.sum)
+    Math.min(left.minSum, right.minSum)
   }
 
   def getTriangleFromLines(data: Array[Array[Int]]): Triangle = {
@@ -30,7 +30,7 @@ object TriangleUtils {
       withMemoization[(Int, Int), Triangle] {
         case (row: Int, col: Int) if row == data.length - 1 =>
           val value = data(row)(col)
-          FinalNode(value, sum = value)
+          FinalNode(value, minSum = value)
 
         case (row: Int, col: Int) =>
           val value = data(row)(col)
@@ -39,18 +39,20 @@ object TriangleUtils {
           Node(value,
             left,
             right,
-            sum = value + minSum(left, right))
+            minSum = value + minSum(left, right)) // minimal sum is pre-computed
       }
 
     get(0, 0)
 
   }
 
+  // minimal sums are pre-computed so we just have to follow the minimum values
+  // down the tree
   def followMinPath(triangle: Triangle): List[Int] = {
     triangle match {
       case FinalNode(value, _) =>
         value :: Nil
-      case Node(value, left, right, _) if left.sum <= right.sum =>
+      case Node(value, left, right, _) if left.minSum <= right.minSum =>
         value :: followMinPath(left)
       case Node(value, _, right, _) =>
         value :: followMinPath(right)
